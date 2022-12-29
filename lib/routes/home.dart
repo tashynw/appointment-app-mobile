@@ -2,6 +2,7 @@
 
 import 'package:appointment_app_mobile/components/appointmentCard.dart';
 import 'package:appointment_app_mobile/components/menuOptions.dart';
+import 'package:appointment_app_mobile/routes/login.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -17,6 +18,10 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: Colors.white,
       bottomNavigationBar: BottomNavigationBar(
+        onTap: (value) {
+          if(value==0) Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) { return HomePage();},));
+          if(value==1) Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) { return LoginPage();},));
+        },
         showUnselectedLabels: false,
         showSelectedLabels: false,
         elevation: 0,
@@ -33,7 +38,7 @@ class _HomePageState extends State<HomePage> {
             icon: Icon(
               Icons.add_box_rounded,
               color: Color(0xff8696BB),
-            ),
+            ),       
             label: "Book"
           ),
           BottomNavigationBarItem(

@@ -28,6 +28,10 @@ class MyApp extends StatelessWidget {
             fontSize: 16,
             color: Color(0xff0D1B34)
           ),
+          headline5: TextStyle(
+            fontSize: 14,
+            color: Color(0xff8696BB)
+          ),
           headline4: TextStyle(
             color: Color(0xff4894FE),
             fontSize: 16,
