@@ -60,19 +60,12 @@ class _HomePageState extends State<HomePage> {
                       children: [
                         Text(
                           "Hello,",
-                          style: TextStyle(
-                            color: Color(0xff8696BB),
-                            fontSize: 16
-                          ),
+                          style: Theme.of(context).textTheme.headline3,
                         ),
                         SizedBox(height: 6,),
                         Text(
                           "Hi Tashyn",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                            color: Color(0xff0D1B34)
-                          )
+                          style: Theme.of(context).textTheme.headline1,
                         )
                       ],
                     ),

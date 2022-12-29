@@ -66,11 +66,7 @@ class _AppointmentCardState extends State<AppointmentCard> {
               ),
               Text(
                 widget.doctorName,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  color: Color(0xff0D1B34)
-                ),
+                style: Theme.of(context).textTheme.headline2
               )
             ],
           ),
@@ -99,10 +95,7 @@ class _AppointmentCardState extends State<AppointmentCard> {
                   ),
                   Text(
                     widget.appoinmentDate,
-                    style: TextStyle(
-                      color: Color(0xff8696BB),
-                      fontSize: 12
-                    ),
+                    style: Theme.of(context).textTheme.bodyText2
                   )
                 ],
               ),
@@ -117,10 +110,7 @@ class _AppointmentCardState extends State<AppointmentCard> {
                   ),
                   Text(
                     widget.appointmentTime,
-                    style: TextStyle(
-                      color: Color(0xff8696BB),
-                      fontSize: 12
-                    ),
+                    style: Theme.of(context).textTheme.bodyText2
                   )
                 ],
               ),
@@ -140,11 +130,7 @@ class _AppointmentCardState extends State<AppointmentCard> {
             child: Center(
               child: Text(
                 "Detail",
-                style: TextStyle(
-                  color: Color(0xff4894FE),
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500
-                ),
+                style: Theme.of(context).textTheme.button
               ),
             ),
           )

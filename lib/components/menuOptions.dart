@@ -22,11 +22,7 @@ class _MenuOptionState extends State<MenuOption> {
       ),
       child: Center(child: Text(
         widget.menuTitle,
-        style: TextStyle(
-          color: Color(0xff4894FE),
-          fontSize: 16,
-          fontWeight: FontWeight.w500
-        ),
+        style: Theme.of(context).textTheme.headline4
       )),
     );
   }
