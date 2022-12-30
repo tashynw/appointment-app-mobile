@@ -49,3 +49,4 @@ app.*.map.json
 project workflow.txt
 android/app/google-services.json
 ios/Runner/GoogleService-Info.plist
+db design.txt
