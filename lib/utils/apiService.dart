@@ -28,8 +28,15 @@ class ApiService {
     });
   }
 
-  static Future<void> getUser() async {
-    return;
+  static Future<Map<String, dynamic>> getUserFromEmail(String email) async {
+    final users = await FirebaseFirestore.instance.collection('users').where('email', isEqualTo: email).get();
+    return users.docs[0].data();
+  }
+
+  static Future<Map<String, dynamic>> getCurrentUser() async{
+    final session = FirebaseAuth.instance.currentUser;
+    final users = await FirebaseFirestore.instance.collection('users').where('email', isEqualTo: session?.email).get();
+    return users.docs[0].data();
   }
 
   static Future<void> deleteUser() async {
@@ -43,6 +50,31 @@ class ApiService {
     } catch(e){
       return false;
     }
+  }
+
+  static Future<bool> addAppointment(String doctorId, String appointmentDate, String appointmentTime, String description) async{
+    try{
+      final user = await getCurrentUser();
+      CollectionReference appointments = FirebaseFirestore.instance.collection('appointments');
+      await appointments.add({
+        'doctorId': doctorId,
+        'patientId': user['userId'],
+        'appointmentDate': appointmentDate,
+        'appointmentTime': appointmentTime,
+        'description': description,
+        'appointmentStatus': "Pending",
+      });
+      return true;
+    } catch(e) {
+      return false;
+    }
+  }
+
+  static Future<List<Map<String, dynamic>>> getDoctors() async{
+    CollectionReference users = FirebaseFirestore.instance.collection('user');
+    final doctorsSnapshot = await FirebaseFirestore.instance.collection('users').where('role', isEqualTo: "Doctor").get();
+    final doctorsArray = doctorsSnapshot.docs.map((data)=> data.data()).toList();
+    return doctorsArray;
   }
   
 }
