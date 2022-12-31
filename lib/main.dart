@@ -1,6 +1,8 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:appointment_app_mobile/routes/home.dart';
+import 'package:appointment_app_mobile/routes/login.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
@@ -16,6 +18,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    bool isSignedIn = FirebaseAuth.instance.currentUser != null ? true : false;
     return MaterialApp(
       title: 'Appointment App',
       theme: ThemeData(
@@ -55,7 +58,9 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: HomePage(),
+      home: isSignedIn ?
+        HomePage() :
+        LoginPage(),
     );
   }
 }
