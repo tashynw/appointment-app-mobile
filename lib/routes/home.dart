@@ -2,7 +2,9 @@
 
 import 'package:appointment_app_mobile/components/appointmentCard.dart';
 import 'package:appointment_app_mobile/components/menuOptions.dart';
+import 'package:appointment_app_mobile/routes/book.dart';
 import 'package:appointment_app_mobile/routes/login.dart';
+import 'package:appointment_app_mobile/utils/apiService.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -14,14 +16,26 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  String firstName = "";
+  @override
+  void initState(){
+    super.initState();
+    fetchFirstName();
+  }
+  void fetchFirstName() async{
+    final session = FirebaseAuth.instance.currentUser;
+    final user = await ApiService.getUserFromEmail(session?.email as String);
+    setState(() {
+      firstName = user['firstName'];
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       bottomNavigationBar: BottomNavigationBar(
-        onTap: (value) {
-          if(value==0) Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) { return HomePage();},));
-          //if(value==1) Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) { return LoginPage();},));
+        onTap: (value) async{
+          if(value==1) Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) { return BookPage();},));
         },
         showUnselectedLabels: false,
         showSelectedLabels: false,
@@ -70,7 +84,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                         SizedBox(height: 6,),
                         Text(
-                          "Hi Tashyn",
+                          "Hi $firstName",
                           style: Theme.of(context).textTheme.headline1,
                         )
                       ],
