@@ -1,8 +1,9 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, use_build_context_synchronously
 
 import 'package:appointment_app_mobile/components/appointmentCard.dart';
 import 'package:appointment_app_mobile/components/menuOptions.dart';
 import 'package:appointment_app_mobile/routes/login.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -20,7 +21,7 @@ class _HomePageState extends State<HomePage> {
       bottomNavigationBar: BottomNavigationBar(
         onTap: (value) {
           if(value==0) Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) { return HomePage();},));
-          if(value==1) Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) { return LoginPage();},));
+          //if(value==1) Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) { return LoginPage();},));
         },
         showUnselectedLabels: false,
         showSelectedLabels: false,
@@ -74,11 +75,20 @@ class _HomePageState extends State<HomePage> {
                         )
                       ],
                     ),
-                    SizedBox(
-                      width: 56,
-                      height: 56,
-                      child: Image(
-                        image: AssetImage("images/home-hello.png"),
+                    InkWell(
+                      onTap: () async{
+                        await FirebaseAuth.instance.signOut();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('User signed out.')),
+                        );
+                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) { return LoginPage();},));
+                      },
+                      child: SizedBox(
+                        width: 56,
+                        height: 56,
+                        child: Image(
+                          image: AssetImage("images/home-hello.png"),
+                        ),
                       ),
                     )
                   ],

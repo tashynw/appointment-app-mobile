@@ -1,7 +1,8 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, use_build_context_synchronously
 
 import 'package:appointment_app_mobile/routes/home.dart';
 import 'package:appointment_app_mobile/routes/signup.dart';
+import 'package:appointment_app_mobile/utils/apiService.dart';
 import 'package:flutter/material.dart';
 
 class LoginPage extends StatefulWidget {
@@ -12,43 +13,14 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  bool isPasswordVisible=false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      bottomNavigationBar: BottomNavigationBar(
-        onTap: (value) {
-          if(value==0) Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) { return HomePage();},));
-          if(value==1) Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) { return LoginPage();},));
-        },
-        showUnselectedLabels: false,
-        showSelectedLabels: false,
-        elevation: 0,
-        backgroundColor: Colors.white,
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.home_sharp,
-              color: Color(0xff8696BB),
-            ),
-            label: "Home"
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.add_box_rounded,
-              color: Color(0xff8696BB),
-            ),
-            label: "Book"
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.person_outline,
-              color: Color(0xff8696BB),
-            ),
-            label: "Profile"
-          ),
-        ],
-      ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Container(
@@ -78,49 +50,99 @@ class _LoginPageState extends State<LoginPage> {
                 SizedBox(
                   height: 45,
                 ),
-                Text(
-                  "Your Email",
-                  style: Theme.of(context).textTheme.headline5,
-                ),
-                TextField(
-        
-                ),
-                SizedBox(
-                  height: 35,
-                ),
-                Text(
-                  "Password",
-                  style: Theme.of(context).textTheme.headline5,
-                ),
-                TextField(
-                  obscureText: true,
-                  enableSuggestions: false,
-                  autocorrect: false,
-                  decoration: InputDecoration(
-                    suffix: Icon(
-                      Icons.remove_red_eye,
-                      size: 16,
-                      color: Color(0xff8696BB),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 60,),
-                Container(
-                  height: 65,
-                  width: MediaQuery.of(context).size.width,
-                  decoration: BoxDecoration(
-                    color: Color(0xff4894FE),
-                    borderRadius: BorderRadius.all(Radius.circular(25))
-                  ),
-                  child: Center(
-                    child: Text(
-                      "Log In",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w500,
-                        fontSize: 16
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Your Email",
+                        style: Theme.of(context).textTheme.headline5,
                       ),
-                    ),
+                      TextFormField(
+                        controller: emailController,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'This field is required';
+                          }
+                          final regex = RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
+                          if (!regex.hasMatch(value)){
+                            return 'This field must be an email';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(
+                        height: 35,
+                      ),
+                      Text(
+                        "Password",
+                        style: Theme.of(context).textTheme.headline5,
+                      ),
+                      TextFormField(
+                        controller: passwordController,
+                        obscureText: isPasswordVisible ? false : true,
+                        enableSuggestions: false,
+                        autocorrect: false,
+                        decoration: InputDecoration(
+                          suffix: InkWell(
+                            onTap: () {
+                              setState(() {
+                                isPasswordVisible = !isPasswordVisible;
+                              });
+                            },
+                            child: Icon(
+                              Icons.remove_red_eye,
+                              size: 16,
+                              color: Color(0xff8696BB),
+                            ),
+                          ),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'This field is required';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: 60,),
+                      InkWell(
+                        onTap: () async{
+                          if(_formKey.currentState!.validate()){
+                            final bool loginStatus = await ApiService.loginUser(emailController.text.trim(), passwordController.text.trim());
+                            if(!loginStatus){
+                              //login unsuccesful
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Incorrect credentials. Try again')),
+                              );
+                              return;
+                            }
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Login successful')),
+                            );
+                            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) { return HomePage();},));
+                          }
+                        },
+                        child: Container(
+                          height: 65,
+                          width: MediaQuery.of(context).size.width,
+                          decoration: BoxDecoration(
+                            color: Color(0xff4894FE),
+                            borderRadius: BorderRadius.all(Radius.circular(25))
+                          ),
+                          child: Center(
+                            child: Text(
+                              "Log In",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w500,
+                                fontSize: 16
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 SizedBox(height: 30,),

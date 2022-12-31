@@ -20,6 +20,8 @@ class _SignUpPageState extends State<SignUpPage> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController confirmPasswordController = TextEditingController();
+  bool isPasswordVisible = false;
+  bool isConfirmPasswordVisible = false;
 
   final _formKey = GlobalKey<FormState>();
   @override
@@ -105,14 +107,21 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                       TextFormField(
                         controller: passwordController,
-                        obscureText: true,
+                        obscureText: isPasswordVisible ? false : true,
                         enableSuggestions: false,
                         autocorrect: false,
                         decoration: InputDecoration(
-                          suffix: Icon(
-                            Icons.remove_red_eye,
-                            size: 16,
-                            color: Color(0xff8696BB),
+                          suffix: InkWell(
+                            onTap: () {
+                              setState(() {
+                                isPasswordVisible = !isPasswordVisible;
+                              });
+                            },
+                            child: Icon(
+                              Icons.remove_red_eye,
+                              size: 16,
+                              color: Color(0xff8696BB),
+                            ),
                           ),
                         ),
                         validator: (value) {
@@ -136,14 +145,21 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                       TextFormField(
                         controller: confirmPasswordController,
-                        obscureText: true,
+                        obscureText: isConfirmPasswordVisible ? false : true,
                         enableSuggestions: false,
                         autocorrect: false,
                         decoration: InputDecoration(
-                          suffix: Icon(
-                            Icons.remove_red_eye,
-                            size: 16,
-                            color: Color(0xff8696BB),
+                          suffix: InkWell(
+                            onTap: () {
+                              setState(() {
+                                isConfirmPasswordVisible = !isConfirmPasswordVisible;
+                              });
+                            },
+                            child: Icon(
+                              Icons.remove_red_eye,
+                              size: 16,
+                              color: Color(0xff8696BB),
+                            ),
                           ),
                         ),
                         validator: (value) {
