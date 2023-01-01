@@ -1,5 +1,6 @@
 // ignore_for_file: file_names, prefer_const_constructors
 
+import 'package:appointment_app_mobile/components/appointmentCard.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:uuid/uuid.dart';
@@ -31,6 +32,11 @@ class ApiService {
   static Future<Map<String, dynamic>> getUserFromEmail(String email) async {
     final users = await FirebaseFirestore.instance.collection('users').where('email', isEqualTo: email).get();
     return users.docs[0].data();
+  }
+
+  static Future<Map<String, dynamic>> getUser(String userId) async {
+    final user = await FirebaseFirestore.instance.collection('users').where('userId', isEqualTo: userId).get();
+    return user.docs[0].data();
   }
 
   static Future<Map<String, dynamic>> getCurrentUser() async{
@@ -75,6 +81,13 @@ class ApiService {
     final doctorsSnapshot = await FirebaseFirestore.instance.collection('users').where('role', isEqualTo: "Doctor").get();
     final doctorsArray = doctorsSnapshot.docs.map((data)=> data.data()).toList();
     return doctorsArray;
+  }
+
+  static Future<List<Map<String, dynamic>>> getAcceptedAppointments() async{
+    final user = await getCurrentUser();
+    final appointmentsSnapshot = await FirebaseFirestore.instance.collection('appointments').where('patientId', isEqualTo: user['userId']).where('appointmentStatus', isEqualTo: "Accepted").get();
+    final appointmentsArray = appointmentsSnapshot.docs.map((appointment) => appointment.data()).toList();
+    return appointmentsArray;    
   }
   
 }

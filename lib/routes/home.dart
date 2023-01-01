@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, use_build_context_synchronously
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, use_build_context_synchronously, avoid_function_literals_in_foreach_calls
 
 import 'package:appointment_app_mobile/components/appointmentCard.dart';
 import 'package:appointment_app_mobile/components/menuOptions.dart';
@@ -7,6 +7,7 @@ import 'package:appointment_app_mobile/routes/login.dart';
 import 'package:appointment_app_mobile/utils/apiService.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -17,16 +18,40 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   String firstName = "";
+  List<AppointmentCard> appointments = [];
   @override
   void initState(){
     super.initState();
     fetchFirstName();
+    fetchAcceptedAppointments();
   }
   void fetchFirstName() async{
     final session = FirebaseAuth.instance.currentUser;
     final user = await ApiService.getUserFromEmail(session?.email as String);
     setState(() {
       firstName = user['firstName'];
+    });
+  }
+  void fetchAcceptedAppointments() async{
+    final acceptedAppointments = await ApiService.getAcceptedAppointments();
+    List<AppointmentCard> appointmentList = [];
+    var doctor ={};
+
+    for(var appointment in acceptedAppointments){
+      List<String> dateArray = appointment['appointmentDate'].split("-");
+      DateTime date = DateTime(
+        int.parse(dateArray[0]),
+        int.parse(dateArray[1]),
+        int.parse(dateArray[2]),
+      );
+      String dateFormatted = DateFormat('EEEE, d MMMM').format(date);
+      doctor = await ApiService.getUser(appointment['doctorId']);
+      appointmentList.add(
+        AppointmentCard(doctorName: "Dr. ${doctor['firstName']} ${doctor['lastName']}", appoinmentDate: dateFormatted, appointmentTime: appointment['appointmentTime'])
+      );
+    }
+    setState(() {
+      appointments = appointmentList;
     });
   }
   @override
@@ -119,23 +144,7 @@ class _HomePageState extends State<HomePage> {
                 ListView(
                   physics: NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
-                  children: [
-                    AppointmentCard(
-                      doctorName: "Dr. Joseph Brostito",
-                      appoinmentDate: "Sunday, 12 June",
-                      appointmentTime: "11:00 AM",
-                    ),
-                    AppointmentCard(
-                      doctorName: "Dr. Andrew Jackson",
-                      appoinmentDate: "Tuesday, 15 June",
-                      appointmentTime: "2:00 PM",
-                    ),
-                    AppointmentCard(
-                      doctorName: "Dr. Jeremy Anderson",
-                      appoinmentDate: "Thursday, 25 July",
-                      appointmentTime: "3:00 PM",
-                    ),
-                  ],
+                  children: appointments,
                 ),
               ],
             ),
