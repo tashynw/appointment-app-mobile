@@ -64,9 +64,11 @@ class _AppointmentCardState extends State<AppointmentCard> {
               SizedBox(
                 width: 10,
               ),
-              Text(
-                widget.doctorName,
-                style: Theme.of(context).textTheme.headline2
+              Expanded(
+                child: Text(
+                  widget.doctorName,
+                  style: Theme.of(context).textTheme.headline2
+                ),
               )
             ],
           ),
@@ -89,6 +91,7 @@ class _AppointmentCardState extends State<AppointmentCard> {
                   Icon(
                     Icons.calendar_month_rounded,
                     color: Color(0xff8696BB),
+                    size: 16,
                   ),
                   SizedBox(
                     width: 8,
@@ -104,6 +107,7 @@ class _AppointmentCardState extends State<AppointmentCard> {
                   Icon(
                     Icons.access_time,
                     color: Color(0xff8696BB),
+                    size: 16,
                   ),
                   SizedBox(
                     width: 6,
