@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, use_build_context_synchronously, avoid_function_literals_in_foreach_calls
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, use_build_context_synchronously, avoid_function_literals_in_foreach_calls, depend_on_referenced_packages
 
 import 'package:appointment_app_mobile/components/appointmentCard.dart';
 import 'package:appointment_app_mobile/components/menuOptions.dart';
@@ -53,7 +53,15 @@ class _HomePageState extends State<HomePage> {
         String dateFormatted = DateFormat('EEEE, d MMMM').format(date);
         doctor = await ApiService.getUser(appointment['doctorId']);
         appointmentList.add(
-          AppointmentCard(doctorName: "Dr. ${doctor['firstName']} ${doctor['lastName']}", appoinmentDate: dateFormatted, appointmentTime: appointment['appointmentTime'], description: appointment['description'],)
+          AppointmentCard(
+            doctorName: "Dr. ${doctor['firstName']} ${doctor['lastName']}",
+            appoinmentDate: dateFormatted,
+            appointmentTime: appointment['appointmentTime'],
+            description: appointment['description'],
+            appointmentStatus: appointment['appointmentStatus'],
+            isDoctor: isDoctor,
+            appointmentId: appointment['appointmentId'],
+          )
         );
       }
       setState(() {
@@ -74,7 +82,15 @@ class _HomePageState extends State<HomePage> {
         String dateFormatted = DateFormat('EEEE, d MMMM').format(date);
         patient = await ApiService.getUser(appointment['patientId']);
         appointmentList.add(
-          AppointmentCard(doctorName: "${patient['firstName']} ${patient['lastName']}", appoinmentDate: dateFormatted, appointmentTime: appointment['appointmentTime'], description: appointment['description'],)
+          AppointmentCard(
+            doctorName: "${patient['firstName']} ${patient['lastName']}",
+            appoinmentDate: dateFormatted,
+            appointmentTime: appointment['appointmentTime'],
+            description: appointment['description'],
+            appointmentStatus: appointment['appointmentStatus'],
+            isDoctor: isDoctor,
+            appointmentId: appointment['appointmentId'],
+          )
         );
       }
       setState(() {
@@ -188,7 +204,18 @@ class _HomePageState extends State<HomePage> {
                               String dateFormatted = DateFormat('EEEE, d MMMM').format(date);
                               patient = await ApiService.getUser(appointment['patientId']);
                               appointmentList.add(
-                                AppointmentCard(doctorName: "${patient['firstName']} ${patient['lastName']}", appoinmentDate: dateFormatted, appointmentTime: appointment['appointmentTime'], description: appointment['description'],)
+                                AppointmentCard(
+                                  doctorName:
+                                      "${patient['firstName']} ${patient['lastName']}",
+                                  appoinmentDate: dateFormatted,
+                                  appointmentTime:
+                                      appointment['appointmentTime'],
+                                  description: appointment['description'],
+                                  appointmentStatus:
+                                      appointment['appointmentStatus'],
+                                  isDoctor: isDoctor,
+                                  appointmentId: appointment['appointmentId'],
+                                )
                               );
                             }
                             setState(() {
@@ -216,7 +243,18 @@ class _HomePageState extends State<HomePage> {
                               String dateFormatted = DateFormat('EEEE, d MMMM').format(date);
                               patient = await ApiService.getUser(appointment['patientId']);
                               appointmentList.add(
-                                AppointmentCard(doctorName: "${patient['firstName']} ${patient['lastName']}", appoinmentDate: dateFormatted, appointmentTime: appointment['appointmentTime'], description: appointment['description'],)
+                                AppointmentCard(
+                                  doctorName:
+                                      "${patient['firstName']} ${patient['lastName']}",
+                                  appoinmentDate: dateFormatted,
+                                  appointmentTime:
+                                      appointment['appointmentTime'],
+                                  description: appointment['description'],
+                                  appointmentStatus:
+                                      appointment['appointmentStatus'],
+                                  isDoctor: isDoctor,
+                                  appointmentId: appointment['appointmentId'],
+                                )
                               );
                             }
                             setState(() {
@@ -244,7 +282,18 @@ class _HomePageState extends State<HomePage> {
                               String dateFormatted = DateFormat('EEEE, d MMMM').format(date);
                               patient = await ApiService.getUser(appointment['patientId']);
                               appointmentList.add(
-                                AppointmentCard(doctorName: "${patient['firstName']} ${patient['lastName']}", appoinmentDate: dateFormatted, appointmentTime: appointment['appointmentTime'], description: appointment['description'],)
+                                AppointmentCard(
+                                  doctorName:
+                                      "${patient['firstName']} ${patient['lastName']}",
+                                  appoinmentDate: dateFormatted,
+                                  appointmentTime:
+                                      appointment['appointmentTime'],
+                                  description: appointment['description'],
+                                  appointmentStatus:
+                                      appointment['appointmentStatus'],
+                                  isDoctor: isDoctor,
+                                  appointmentId: appointment['appointmentId'],
+                                )
                               );
                             }
                             setState(() {
