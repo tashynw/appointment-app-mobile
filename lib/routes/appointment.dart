@@ -1,5 +1,7 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, use_build_context_synchronously
 
+import 'package:appointment_app_mobile/routes/home.dart';
+import 'package:appointment_app_mobile/utils/apiService.dart';
 import 'package:flutter/material.dart';
 
 class AppointmentPage extends StatefulWidget {
@@ -7,8 +9,19 @@ class AppointmentPage extends StatefulWidget {
   final String appointmentDate;
   final String appointmentTime;
   final String description;
-
-  const AppointmentPage({super.key, required this.doctorName, required this.appointmentDate, required this.appointmentTime, required this.description});
+  final String appointmentStatus;
+  final String appointmentId;
+  final bool isDoctor;
+  const AppointmentPage({
+    super.key,
+    required this.doctorName,
+    required this.appointmentDate,
+    required this.appointmentTime,
+    required this.description,
+    required this.isDoctor,
+    required this.appointmentStatus,
+    required this.appointmentId,
+  });
 
   @override
   State<AppointmentPage> createState() => _AppointmentPageState();
@@ -108,6 +121,39 @@ class _AppointmentPageState extends State<AppointmentPage> {
                   maxLines: 5,
                 ),
                 SizedBox(height: 50,),
+                if(widget.isDoctor && widget.appointmentStatus=="Pending") ...[
+                  Text(
+                    "Set Status",
+                    style: Theme.of(context).textTheme.headline5,
+                  ),
+                  DropdownButtonFormField(
+                    items: [
+                      DropdownMenuItem(
+                        value: "Accepted",
+                        child: Text("Accepted"),
+                      ),
+                      DropdownMenuItem(
+                        value: "Rejected",
+                        child: Text("Rejected"),
+                      ),
+                    ],
+                    onChanged: (value) async{
+                      final request = await ApiService.updateAppointment(widget.appointmentId, value.toString());
+                      if(!request){
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Edit failed.')),
+                        );
+                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) { return HomePage();},));
+                        return;
+                      }
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Appointment updated successfully.')),
+                      );
+                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) { return HomePage();},));
+                    },
+                  ),
+                  SizedBox(height: 50,),
+                ],
               ],
             ),
           ),

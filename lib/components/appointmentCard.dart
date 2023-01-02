@@ -8,12 +8,18 @@ class AppointmentCard extends StatefulWidget {
   final String appoinmentDate;
   final String appointmentTime;
   final String description;
+  final String appointmentStatus;
+  final String appointmentId;
+  final bool isDoctor;
   const AppointmentCard({
     super.key,
     required this.doctorName,
     required this.appoinmentDate,
     required this.appointmentTime,
-    required this.description
+    required this.description,
+    required this.appointmentStatus,
+    required this.isDoctor,
+    required this.appointmentId,
   });
 
   @override
@@ -135,6 +141,9 @@ class _AppointmentCardState extends State<AppointmentCard> {
                     appointmentDate: widget.appoinmentDate,
                     appointmentTime: widget.appointmentTime,
                     description: widget.description,
+                    isDoctor: widget.isDoctor,
+                    appointmentStatus: widget.appointmentStatus,
+                    appointmentId: widget.appointmentId,
                   );
                 },
               ));

@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, use_build_context_synchronously, avoid_function_literals_in_foreach_calls
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, use_build_context_synchronously, avoid_function_literals_in_foreach_calls, depend_on_referenced_packages
 
 import 'package:appointment_app_mobile/components/appointmentCard.dart';
 import 'package:appointment_app_mobile/components/menuOptions.dart';
@@ -19,46 +19,90 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   String firstName = "";
   List<AppointmentCard> appointments = [];
+  bool isDoctor = false;
   @override
   void initState(){
     super.initState();
-    fetchFirstName();
-    fetchAcceptedAppointments();
+    initialFetch();
   }
-  void fetchFirstName() async{
+  Future<void> initialFetch() async{
+    await fetchFirstName();
+    await fetchAcceptedAppointments();
+  }
+  Future<void> fetchFirstName() async{
     final session = FirebaseAuth.instance.currentUser;
     final user = await ApiService.getUserFromEmail(session?.email as String);
     setState(() {
       firstName = user['firstName'];
+      isDoctor = user['role'] == "Doctor";
     });
   }
-  void fetchAcceptedAppointments() async{
-    final acceptedAppointments = await ApiService.getAcceptedAppointments();
-    List<AppointmentCard> appointmentList = [];
-    var doctor ={};
+  Future<void> fetchAcceptedAppointments() async{
+    if(!isDoctor){
+      final acceptedAppointments = await ApiService.getAcceptedAppointments();
+      List<AppointmentCard> appointmentList = [];
+      var doctor ={};
 
-    for(var appointment in acceptedAppointments){
-      List<String> dateArray = appointment['appointmentDate'].split("-");
-      DateTime date = DateTime(
-        int.parse(dateArray[0]),
-        int.parse(dateArray[1]),
-        int.parse(dateArray[2]),
-      );
-      String dateFormatted = DateFormat('EEEE, d MMMM').format(date);
-      doctor = await ApiService.getUser(appointment['doctorId']);
-      appointmentList.add(
-        AppointmentCard(doctorName: "Dr. ${doctor['firstName']} ${doctor['lastName']}", appoinmentDate: dateFormatted, appointmentTime: appointment['appointmentTime'], description: appointment['description'],)
-      );
-    }
-    setState(() {
-      appointments = appointmentList;
-    });
+      for(var appointment in acceptedAppointments){
+        List<String> dateArray = appointment['appointmentDate'].split("-");
+        DateTime date = DateTime(
+          int.parse(dateArray[0]),
+          int.parse(dateArray[1]),
+          int.parse(dateArray[2]),
+        );
+        String dateFormatted = DateFormat('EEEE, d MMMM').format(date);
+        doctor = await ApiService.getUser(appointment['doctorId']);
+        appointmentList.add(
+          AppointmentCard(
+            doctorName: "Dr. ${doctor['firstName']} ${doctor['lastName']}",
+            appoinmentDate: dateFormatted,
+            appointmentTime: appointment['appointmentTime'],
+            description: appointment['description'],
+            appointmentStatus: appointment['appointmentStatus'],
+            isDoctor: isDoctor,
+            appointmentId: appointment['appointmentId'],
+          )
+        );
+      }
+      setState(() {
+        appointments = appointmentList;
+      });
+    } else {
+      final acceptedAppointments = await ApiService.getAcceptedAppointmentsForDoctor();
+      List<AppointmentCard> appointmentList = [];
+      var patient ={};
+
+      for(var appointment in acceptedAppointments){
+        List<String> dateArray = appointment['appointmentDate'].split("-");
+        DateTime date = DateTime(
+          int.parse(dateArray[0]),
+          int.parse(dateArray[1]),
+          int.parse(dateArray[2]),
+        );
+        String dateFormatted = DateFormat('EEEE, d MMMM').format(date);
+        patient = await ApiService.getUser(appointment['patientId']);
+        appointmentList.add(
+          AppointmentCard(
+            doctorName: "${patient['firstName']} ${patient['lastName']}",
+            appoinmentDate: dateFormatted,
+            appointmentTime: appointment['appointmentTime'],
+            description: appointment['description'],
+            appointmentStatus: appointment['appointmentStatus'],
+            isDoctor: isDoctor,
+            appointmentId: appointment['appointmentId'],
+          )
+        );
+      }
+      setState(() {
+        appointments = appointmentList;
+      });
+    } 
   }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      bottomNavigationBar: BottomNavigationBar(
+      bottomNavigationBar: !isDoctor ? BottomNavigationBar(
         onTap: (value) async{
           if(value==1) Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) { return BookPage();},));
         },
@@ -89,7 +133,7 @@ class _HomePageState extends State<HomePage> {
             label: "Profile"
           ),
         ],
-      ),
+      ) : null,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Container(
@@ -135,9 +179,134 @@ class _HomePageState extends State<HomePage> {
                 SizedBox(
                   height: 20,
                 ),
-                MenuOption(
-                  menuTitle: "Accepted Appointments",
-                ),
+                !isDoctor ?
+                  MenuOption(
+                    menuTitle: "Accepted Appointments",
+                  )
+                  :
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        InkWell(
+                          onTap: () async{
+                            final acceptedAppointments = await ApiService.getAcceptedAppointmentsForDoctor();
+                            List<AppointmentCard> appointmentList = [];
+                            var patient ={};
+
+                            for(var appointment in acceptedAppointments){
+                              List<String> dateArray = appointment['appointmentDate'].split("-");
+                              DateTime date = DateTime(
+                                int.parse(dateArray[0]),
+                                int.parse(dateArray[1]),
+                                int.parse(dateArray[2]),
+                              );
+                              String dateFormatted = DateFormat('EEEE, d MMMM').format(date);
+                              patient = await ApiService.getUser(appointment['patientId']);
+                              appointmentList.add(
+                                AppointmentCard(
+                                  doctorName:
+                                      "${patient['firstName']} ${patient['lastName']}",
+                                  appoinmentDate: dateFormatted,
+                                  appointmentTime:
+                                      appointment['appointmentTime'],
+                                  description: appointment['description'],
+                                  appointmentStatus:
+                                      appointment['appointmentStatus'],
+                                  isDoctor: isDoctor,
+                                  appointmentId: appointment['appointmentId'],
+                                )
+                              );
+                            }
+                            setState(() {
+                              appointments = appointmentList;
+                            });
+                          },
+                          child: MenuOption(
+                            menuTitle: "Accepted Appointments",
+                          ),
+                        ),
+                        SizedBox(width: 10,),
+                        InkWell(
+                          onTap: () async{
+                            final pendingAppointments = await ApiService.getPendingAppointmentsForDoctor();
+                            List<AppointmentCard> appointmentList = [];
+                            var patient ={};
+
+                            for(var appointment in pendingAppointments){
+                              List<String> dateArray = appointment['appointmentDate'].split("-");
+                              DateTime date = DateTime(
+                                int.parse(dateArray[0]),
+                                int.parse(dateArray[1]),
+                                int.parse(dateArray[2]),
+                              );
+                              String dateFormatted = DateFormat('EEEE, d MMMM').format(date);
+                              patient = await ApiService.getUser(appointment['patientId']);
+                              appointmentList.add(
+                                AppointmentCard(
+                                  doctorName:
+                                      "${patient['firstName']} ${patient['lastName']}",
+                                  appoinmentDate: dateFormatted,
+                                  appointmentTime:
+                                      appointment['appointmentTime'],
+                                  description: appointment['description'],
+                                  appointmentStatus:
+                                      appointment['appointmentStatus'],
+                                  isDoctor: isDoctor,
+                                  appointmentId: appointment['appointmentId'],
+                                )
+                              );
+                            }
+                            setState(() {
+                              appointments = appointmentList;
+                            });
+                          },
+                          child: MenuOption(
+                            menuTitle: "Pending Appointments",
+                          ),
+                        ),
+                        SizedBox(width: 10,),
+                        InkWell(
+                          onTap: () async{
+                            final rejectedAppointments = await ApiService.getRejectedAppointmentsForDoctor();
+                            List<AppointmentCard> appointmentList = [];
+                            var patient ={};
+
+                            for(var appointment in rejectedAppointments){
+                              List<String> dateArray = appointment['appointmentDate'].split("-");
+                              DateTime date = DateTime(
+                                int.parse(dateArray[0]),
+                                int.parse(dateArray[1]),
+                                int.parse(dateArray[2]),
+                              );
+                              String dateFormatted = DateFormat('EEEE, d MMMM').format(date);
+                              patient = await ApiService.getUser(appointment['patientId']);
+                              appointmentList.add(
+                                AppointmentCard(
+                                  doctorName:
+                                      "${patient['firstName']} ${patient['lastName']}",
+                                  appoinmentDate: dateFormatted,
+                                  appointmentTime:
+                                      appointment['appointmentTime'],
+                                  description: appointment['description'],
+                                  appointmentStatus:
+                                      appointment['appointmentStatus'],
+                                  isDoctor: isDoctor,
+                                  appointmentId: appointment['appointmentId'],
+                                )
+                              );
+                            }
+                            setState(() {
+                              appointments = appointmentList;
+                            });
+                          },
+                          child: MenuOption(
+                            menuTitle: "Rejected Appointments",
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 SizedBox(
                   height: 24,
                 ),
