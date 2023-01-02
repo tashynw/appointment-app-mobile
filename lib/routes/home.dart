@@ -47,7 +47,7 @@ class _HomePageState extends State<HomePage> {
       String dateFormatted = DateFormat('EEEE, d MMMM').format(date);
       doctor = await ApiService.getUser(appointment['doctorId']);
       appointmentList.add(
-        AppointmentCard(doctorName: "Dr. ${doctor['firstName']} ${doctor['lastName']}", appoinmentDate: dateFormatted, appointmentTime: appointment['appointmentTime'])
+        AppointmentCard(doctorName: "Dr. ${doctor['firstName']} ${doctor['lastName']}", appoinmentDate: dateFormatted, appointmentTime: appointment['appointmentTime'], description: appointment['description'],)
       );
     }
     setState(() {

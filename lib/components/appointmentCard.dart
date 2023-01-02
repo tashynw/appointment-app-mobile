@@ -1,16 +1,19 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'package:appointment_app_mobile/routes/appointment.dart';
 import 'package:flutter/material.dart';
 
 class AppointmentCard extends StatefulWidget {
   final String doctorName;
   final String appoinmentDate;
   final String appointmentTime;
+  final String description;
   const AppointmentCard({
     super.key,
     required this.doctorName,
     required this.appoinmentDate,
-    required this.appointmentTime
+    required this.appointmentTime,
+    required this.description
   });
 
   @override
@@ -118,23 +121,36 @@ class _AppointmentCardState extends State<AppointmentCard> {
                   )
                 ],
               ),
-
             ],
           ),
           SizedBox(
             height: 20,
           ),
-          Container(
-            width: 295,
-            height: 39,
-            decoration: BoxDecoration(
-              color: Color.fromRGBO(99, 180, 255, 0.1),
-              borderRadius: BorderRadius.all(Radius.circular(100))
-            ),
-            child: Center(
-              child: Text(
-                "Detail",
-                style: Theme.of(context).textTheme.button
+          InkWell(
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(
+                builder: (context) {
+                  return AppointmentPage(
+                    doctorName: widget.doctorName,
+                    appointmentDate: widget.appoinmentDate,
+                    appointmentTime: widget.appointmentTime,
+                    description: widget.description,
+                  );
+                },
+              ));
+            },
+            child: Container(
+              width: 295,
+              height: 39,
+              decoration: BoxDecoration(
+                color: Color.fromRGBO(99, 180, 255, 0.1),
+                borderRadius: BorderRadius.all(Radius.circular(100))
+              ),
+              child: Center(
+                child: Text(
+                  "Detail",
+                  style: Theme.of(context).textTheme.button
+                ),
               ),
             ),
           )
