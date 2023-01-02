@@ -89,5 +89,26 @@ class ApiService {
     final appointmentsArray = appointmentsSnapshot.docs.map((appointment) => appointment.data()).toList();
     return appointmentsArray;    
   }
+
+  static Future<List<Map<String, dynamic>>> getAcceptedAppointmentsForDoctor() async{
+    final user = await getCurrentUser();
+    final appointmentsSnapshot = await FirebaseFirestore.instance.collection('appointments').where('doctorId', isEqualTo: user['userId']).where('appointmentStatus', isEqualTo: "Accepted").get();
+    final appointmentsArray = appointmentsSnapshot.docs.map((appointment) => appointment.data()).toList();
+    return appointmentsArray;    
+  }
+
+  static Future<List<Map<String, dynamic>>> getPendingAppointmentsForDoctor() async{
+    final user = await getCurrentUser();
+    final appointmentsSnapshot = await FirebaseFirestore.instance.collection('appointments').where('doctorId', isEqualTo: user['userId']).where('appointmentStatus', isEqualTo: "Pending").get();
+    final appointmentsArray = appointmentsSnapshot.docs.map((appointment) => appointment.data()).toList();
+    return appointmentsArray;    
+  }
+
+  static Future<List<Map<String, dynamic>>> getRejectedAppointmentsForDoctor() async{
+    final user = await getCurrentUser();
+    final appointmentsSnapshot = await FirebaseFirestore.instance.collection('appointments').where('doctorId', isEqualTo: user['userId']).where('appointmentStatus', isEqualTo: "Rejected").get();
+    final appointmentsArray = appointmentsSnapshot.docs.map((appointment) => appointment.data()).toList();
+    return appointmentsArray;    
+  }
   
 }
